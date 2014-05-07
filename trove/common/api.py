@@ -81,6 +81,10 @@ class API(wsgi.Router):
                        controller=instance_resource,
                        action="update",
                        conditions={'method': ['PUT']})
+        mapper.connect('/{tenant_id}/instances/{id}',
+                       controller=instance_resource,
+                       action='edit',
+                       conditions={'method': ['PATCH']})
         mapper.connect("/{tenant_id}/instances/{id}",
                        controller=instance_resource,
                        action="delete",

@@ -258,6 +258,36 @@ class AfterConfigurationsCreation(object):
         resp, body = instance_info.dbaas.client.last_response
         assert_equal(resp.status, 202)
 
+    @test
+    def test_assign_configuration_to_valid_instance_using_patch(self):
+        # test assigning a configuration to an instance
+        report = CONFIG.get_report()
+        report.log("instance_info.id: %s" % instance_info.id)
+        report.log("configuration_info: %s" % configuration_info)
+        report.log("configuration_info.id: %s" % configuration_info.id)
+        config_id = configuration_info.id
+        instance_info.dbaas.instances.edit(instance_info.id,
+                                           configuration=config_id)
+        resp, body = instance_info.dbaas.client.last_response
+        assert_equal(resp.status, 204)
+
+    @test
+    def test_assign_config_and_name_to_instance_using_patch(self):
+        # test assigning a configuration and name to an instance
+        new_name = 'new_name'
+        report = CONFIG.get_report()
+        report.log("instance_info.id: %s" % instance_info.id)
+        report.log("configuration_info: %s" % configuration_info)
+        report.log("configuration_info.id: %s" % configuration_info.id)
+        report.log("instance name:%s" % instance_info.name)
+        report.log("instance new name:%s" % new_name)
+        config_id = configuration_info.id
+        instance_info.dbaas.instances.edit(instance_info.id,
+                                           configuration=config_id,
+                                           name=new_name)
+        resp, body = instance_info.dbaas.client.last_response
+        assert_equal(resp.status, 204)
+
     @test(depends_on=[test_assign_configuration_to_valid_instance])
     def test_assign_configuration_to_instance_with_config(self):
         # test assigning a configuration to an instance that
@@ -265,6 +295,15 @@ class AfterConfigurationsCreation(object):
         config_id = configuration_info.id
         assert_raises(exceptions.BadRequest,
                       instance_info.dbaas.instances.modify, instance_info.id,
+                      configuration=config_id)
+
+    @test(depends_on=[test_assign_configuration_to_valid_instance])
+    def test_assign_configuration_to_instance_with_config_using_patch(self):
+        # test assigning a configuration to an instance that
+        # already has an assigned configuration
+        config_id = configuration_info.id
+        assert_raises(exceptions.BadRequest,
+                      instance_info.dbaas.instances.edit, instance_info.id,
                       configuration=config_id)
 
     @test(depends_on=[test_assign_configuration_to_valid_instance])
@@ -276,6 +315,27 @@ class AfterConfigurationsCreation(object):
         assert_not_equal(None, inst.configuration['id'])
         _test_configuration_is_applied_to_instance(instance_info,
                                                    configuration_id)
+
+    @test(depends_on=[test_assign_configuration_to_valid_instance_using_patch])
+    @time_out(10)
+    def test_get_configuration_details_from_instance_using_patch(self):
+        # validate that the configuraiton was applied correctly to the instance
+        inst = instance_info.dbaas.instances.get(instance_info.id)
+        configuration_id = inst.configuration['id']
+        assert_not_equal(None, inst.configuration['id'])
+        _test_configuration_is_applied_to_instance(instance_info,
+                                                   configuration_id)
+
+    @test(depends_on=[test_assign_config_and_name_to_instance_using_patch])
+    @time_out(10)
+    def test_get_config_details_and_name_from_instance_using_patch(self):
+        # validate that the configuraiton was applied correctly to the instance
+        inst = instance_info.dbaas.instances.get(instance_info.id)
+        configuration_id = inst.configuration['id']
+        assert_not_equal(None, inst.configuration['id'])
+        _test_configuration_is_applied_to_instance(instance_info,
+                                                   configuration_id)
+        assert_equal(inst.name, 'new_name')
 
     @test
     def test_configurations_get(self):

@@ -260,6 +260,31 @@ class InstanceController(wsgi.Controller):
             instance.unassign_configuration()
         return wsgi.Result(None, 202)
 
+    def edit(self, req, id, body, tenant_id):
+        """Updates the instance to attach/detach configuration """
+        """and/or update name."""
+        LOG.info(_("Updating instance for tenant id %s") % tenant_id)
+        LOG.info(logging.mask_password(_("req: %s") % req))
+        LOG.info(logging.mask_password(_("body: %s") % body))
+        context = req.environ[wsgi.CONTEXT_KEY]
+
+        instance = models.Instance.load(context, id)
+
+        # if configuration is set, then we will update the instance to use
+        # the new configuration.
+        # if instance name is set, then we will update the instance name.
+
+        if 'instance' in body:
+            configuration_id = self._configuration_parse(context, body)
+
+            if 'configuration' in body['instance']:
+                self.update(req, id, body, tenant_id)
+
+            if 'name' in body['instance']:
+                instance.update_db(name=body['instance']['name'])
+
+        return wsgi.Result(None, 204)
+
     def configuration(self, req, tenant_id, id):
         """
         Returns the default configuration template applied to the instance.

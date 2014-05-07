@@ -1035,6 +1035,40 @@ class TestInstanceListing(object):
 
 
 @test(depends_on_classes=[WaitForGuestInstallationToFinish],
+      groups=[GROUP, GROUP_START, GROUP_START_SIMPLE, "dbaas.update"])
+class TestInstanceUpdate(object):
+    """Test the updation of the instance information """
+
+    @before_class
+    def setUp(self):
+        reqs = Requirements(is_admin=False)
+        self.other_user = CONFIG.users.find_user(
+            reqs,
+            black_list=[instance_info.user.auth_user])
+        self.other_client = create_dbaas_client(self.other_user)
+
+    @test
+    def test_update_name(self):
+        new_name = 'new-name'
+        result = dbaas.instances.edit(instance_info.id, name=new_name)
+        assert_equal(204, dbaas.last_http_code)
+        result = dbaas.instances.get(instance_info.id)
+        assert_equal(200, dbaas.last_http_code)
+        assert_equal(new_name, result.name)
+
+    @test
+    def test_update_name_to_invalid_instance(self):
+        # test assigning to an instance that does not exist
+        invalid_id = "invalid-inst-id"
+        try:
+            instance_info.dbaas.instances.edit(invalid_id,
+                                               name='name')
+        except exceptions.NotFound:
+            resp, body = instance_info.dbaas.client.last_response
+            assert_equal(resp.status, 404)
+
+
+@test(depends_on_classes=[WaitForGuestInstallationToFinish],
       groups=[GROUP, 'dbaas.usage'])
 class TestCreateNotification(object):
     """
