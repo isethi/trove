@@ -32,7 +32,7 @@ class DatastoreController(wsgi.Controller):
         only_active = True
         if context.is_admin:
             only_active = False
-        datastores = models.Datastores.load(only_active)
+        datastores = models.Datastores.load(tenant_id, only_active)
         return wsgi.Result(views.
                            DatastoresView(datastores, req).data(),
                            200)

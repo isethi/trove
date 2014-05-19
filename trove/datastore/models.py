@@ -33,6 +33,7 @@ def persisted_models():
     return {
         'datastore': DBDatastore,
         'datastore_version': DBDatastoreVersion,
+        'datastore_version_members': DBDatastoreVersionMembers,
     }
 
 
@@ -45,6 +46,11 @@ class DBDatastoreVersion(dbmodels.DatabaseModelBase):
 
     _data_fields = ['id', 'datastore_id', 'name', 'manager', 'image_id',
                     'packages', 'active']
+
+
+class DBDatastoreVersionMembers(dbmodels.DatabaseModelBase):
+
+    _data_fields = ['id', 'datastore_id', 'tenant_id']
 
 
 class Datastore(object):
@@ -81,11 +87,24 @@ class Datastores(object):
         self.db_info = db_info
 
     @classmethod
-    def load(cls, only_active=True):
+    def load(cls, tenant_id, only_active=True):
         datastores = DBDatastore.find_all()
         if only_active:
-            datastores = datastores.join(DBDatastoreVersion).filter(
-                DBDatastoreVersion.active == 1)
+            #datastores = datastores.join(DBDatastoreVersion).filter(
+            #    DBDatastoreVersion.active == 1)
+            #datastores = (datastores.join(DBDatastoreVersion)
+            #              .join(DBDatastoreVersionMembers)
+            #              .filter(DBDatastoreVersion.active == 1)
+            #              .filter(db_api.or_(DBDatastoreVersion.visibility == 'public')
+            query = DBDatastore.query()
+            query = query.join(DBDatastoreVersion)
+            query = query.join(DBDatastoreVersionMembers)
+            query = query.filter(DBDatastoreVersion.active == 1)
+            query = query.filter(db_api.or_(
+                DBDatastoreVersion.visibility == 'public',
+                db_api.and_(DBDatastoreVersion.visibility == 'private',
+                DBDatastoreVersionMembers.tenant_id == tenant_id)))
+            datastores = query.all()
         return cls(datastores)
 
     def __iter__(self):

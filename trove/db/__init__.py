@@ -41,6 +41,12 @@ class Query(object):
         self._conditions = conditions
         self.db_api = get_db_api()
 
+    def and_(self):
+        return self.db_api.and_()
+
+    def or_(self):
+        return self.db_api.or_()
+
     def all(self):
         return self.db_api.list(self._query_func, self._model,
                                 **self._conditions)

@@ -14,10 +14,20 @@
 #    under the License.
 
 import sqlalchemy.exc
+from sqlalchemy import or_
+from sqlalchemy import and_
 
 from trove.common import exception
 from trove.db.sqlalchemy import migration
 from trove.db.sqlalchemy import session
+
+
+def and_():
+    return and_
+
+
+def or_():
+    return or_
 
 
 def list(query_func, *args, **kwargs):
