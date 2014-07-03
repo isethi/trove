@@ -116,7 +116,8 @@ class NotifyMixin(object):
             'user_id': self.context.user,
         }
 
-        if CONF.trove_volume_support:
+        volume_support = CONF.get(self.datastore.manager).volume_support
+        if volume_support:
             payload.update({
                 'volume_size': self.volume_size,
                 'nova_volume_id': self.volume_id
@@ -390,10 +391,11 @@ class FreshInstanceTasks(FreshInstance, NotifyMixin, ConfigurationMixin):
             udp_ports_mapping_list = self._build_sg_rules_mapping(CONF.get(
                 datastore_manager).udp_ports)
 
+            volume_support = CONF.get(datastore_manager).volume_support
             ifaces, ports = self._build_heat_nics(nics)
             template_obj = template.load_heat_template(datastore_manager)
             heat_template_unicode = template_obj.render(
-                volume_support=CONF.trove_volume_support,
+                volume_support=volume_support,
                 ifaces=ifaces, ports=ports,
                 tcp_rules=tcp_rules_mapping_list,
                 udp_rules=udp_ports_mapping_list)
@@ -435,7 +437,7 @@ class FreshInstanceTasks(FreshInstance, NotifyMixin, ConfigurationMixin):
                 raise TroveError("Heat Resource Provisioning Failed.")
             instance_id = resource.physical_resource_id
 
-            if CONF.trove_volume_support:
+            if volume_support:
                 resource = client.resources.get(stack.id, 'DataVolume')
                 if resource.resource_status != HEAT_RESOURCE_SUCCESSFUL_STATE:
                     raise TroveError("Heat Resource Provisioning Failed.")
@@ -487,7 +489,7 @@ class FreshInstanceTasks(FreshInstance, NotifyMixin, ConfigurationMixin):
 
     def _build_volume_info(self, datastore_manager, volume_size=None):
         volume_info = None
-        volume_support = CONF.trove_volume_support
+        volume_support = CONF.get(datastore_manager).volume_support
         LOG.debug("trove volume support = %s" % volume_support)
         if volume_support:
             try:

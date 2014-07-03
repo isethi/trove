@@ -177,9 +177,11 @@ root_on_create = False
 # Format (single port or port range): A, B-C
 # where C greater than B
 tcp_ports = 3306
+volume_support = True
 
 [redis]
 tcp_ports = 6379
+volume_support = False
 
 [cassandra]
 tcp_ports = 7000, 7001, 9042, 9160

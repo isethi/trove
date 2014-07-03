@@ -294,6 +294,8 @@ mysql_opts = [
                 "instance-create as the 'password' field."),
     cfg.IntOpt('usage_timeout', default=400,
                help='Timeout to wait for a guest to become active.'),
+    cfg.IntOpt('volume_support', default=cfg.CONF.trove_volume_support,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 # Percona
@@ -321,6 +323,8 @@ percona_opts = [
                 "instance-create as the 'password' field."),
     cfg.IntOpt('usage_timeout', default=450,
                help='Timeout to wait for a guest to become active.'),
+    cfg.IntOpt('volume_support', default=cfg.CONF.trove_volume_support,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 # Redis
@@ -343,6 +347,8 @@ redis_opts = [
                "volumes if volume support is enabled."),
     cfg.IntOpt('usage_timeout', default=450,
                help='Timeout to wait for a guest to become active.'),
+    cfg.IntOpt('volume_support', default=cfg.CONF.trove_volume_support,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 # Cassandra
@@ -365,6 +371,8 @@ cassandra_opts = [
                "volumes if volume support is enabled."),
     cfg.IntOpt('usage_timeout', default=600,
                help='Timeout to wait for a guest to become active.'),
+    cfg.IntOpt('volume_support', default=cfg.CONF.trove_volume_support,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 #Couchbase
@@ -394,6 +402,8 @@ couchbase_opts = [
                 'service during instance-create. The generated password for '
                 'the root user is immediately returned in the response of '
                 "instance-create as the 'password' field."),
+    cfg.IntOpt('volume_support', default=cfg.CONF.trove_volume_support,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 # MongoDB
@@ -416,6 +426,8 @@ mongodb_opts = [
                "volumes if volume support is enabled."),
     cfg.IntOpt('usage_timeout', default=450,
                help='Timeout to wait for a guest to become active.'),
+    cfg.IntOpt('volume_support', default=cfg.CONF.trove_volume_support,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 CONF = cfg.CONF
