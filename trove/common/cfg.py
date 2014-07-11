@@ -21,6 +21,7 @@ from trove.openstack.common import log as logging
 import os.path
 
 UNKNOWN_SERVICE_ID = 'unknown-service-id-error'
+VOLUME_SUPPORT = True
 
 path_opts = [
     cfg.StrOpt('pybasedir',
@@ -45,7 +46,7 @@ common_opts = [
                default="api-paste.ini",
                help='File name for the paste.deploy config for trove-api.'),
     cfg.BoolOpt('trove_volume_support',
-                default=True,
+                default=VOLUME_SUPPORT,
                 help='Whether to provision a cinder volume for datadir.'),
     cfg.ListOpt('admin_roles', default=['admin']),
     cfg.BoolOpt('update_status_on_fail', default=False,
@@ -294,6 +295,9 @@ mysql_opts = [
                 "instance-create as the 'password' field."),
     cfg.IntOpt('usage_timeout', default=400,
                help='Timeout to wait for a guest to become active.'),
+    cfg.BoolOpt('volume_support',
+                default=VOLUME_SUPPORT,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 # Percona
@@ -321,6 +325,9 @@ percona_opts = [
                 "instance-create as the 'password' field."),
     cfg.IntOpt('usage_timeout', default=450,
                help='Timeout to wait for a guest to become active.'),
+    cfg.BoolOpt('volume_support',
+                default=VOLUME_SUPPORT,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 # Redis
@@ -343,6 +350,9 @@ redis_opts = [
                "volumes if volume support is enabled."),
     cfg.IntOpt('usage_timeout', default=450,
                help='Timeout to wait for a guest to become active.'),
+    cfg.BoolOpt('volume_support',
+                default=VOLUME_SUPPORT,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 # Cassandra
@@ -365,6 +375,9 @@ cassandra_opts = [
                "volumes if volume support is enabled."),
     cfg.IntOpt('usage_timeout', default=600,
                help='Timeout to wait for a guest to become active.'),
+    cfg.BoolOpt('volume_support',
+                default=VOLUME_SUPPORT,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 #Couchbase
@@ -394,6 +407,9 @@ couchbase_opts = [
                 'service during instance-create. The generated password for '
                 'the root user is immediately returned in the response of '
                 "instance-create as the 'password' field."),
+    cfg.BoolOpt('volume_support',
+                default=VOLUME_SUPPORT,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 # MongoDB
@@ -416,6 +432,9 @@ mongodb_opts = [
                "volumes if volume support is enabled."),
     cfg.IntOpt('usage_timeout', default=450,
                help='Timeout to wait for a guest to become active.'),
+    cfg.BoolOpt('volume_support',
+                default=VOLUME_SUPPORT,
+                help='Whether to provision a cinder volume for datadir.'),
 ]
 
 CONF = cfg.CONF
